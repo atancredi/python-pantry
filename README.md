@@ -26,22 +26,6 @@ This lightweight [package](https://github.com/sarvesh4396/pantry-cloud) is a pyt
 
 pantry-cloud requires [python3.7+](https://www.python.org/downloads/) to run.
 
-#### Windows
-
-```sh
-pip install pantry-cloud
-or
-pip install --upgrade pantry-cloud
-```
-
-#### Linux
-
-```sh
-pip3 install pantry-cloud
-or 
-pip3 install --upgrade pantry-cloud
-```
-
 ## Module Usage
 
 #### Creating basket
@@ -55,7 +39,7 @@ print(res)
 
 #### Basket detail
 ```sh
-from pantry_cloud import Pantry
+from pantry import Pantry
 
 pantry = Pantry(api_key='your api key')
 res = pantry.basket(basket='hello', outputfile='path to json file') # Use outputfile if you want to write data data

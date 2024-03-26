@@ -1,4 +1,4 @@
-from .pantry_cloud import Pantry
+from .pantry import Pantry
 from argparse import ArgumentParser
 
 

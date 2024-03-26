@@ -1,4 +1,7 @@
 import requests, json, os
+import requests
+from math import sqrt, pow
+
 
 BASE_URL = "https://getpantry.cloud/apiv1/pantry/"
 HEADERS = {"Content-Type": "application/json"}
@@ -36,11 +39,13 @@ class Pantry(Utility):
         else:
             raise "Provide an API Key."
 
-    def show_account(self, outputfile=None):
-        self.outputfile = outputfile
+        self.get_account()
+
+    def get_account(self):
         url = f"{BASE_URL}{self.api_key}"
-        self.res = requests.get(url, headers=HEADERS)
-        return self.check_response()
+        res = requests.get(url, headers=HEADERS)
+        self.account = res.json()
+        self.baskets = [x["name"] for x in self.account["baskets"]]
 
     def basket(self, basket=None, outputfile=None):
         self.outputfile = outputfile
@@ -49,32 +54,21 @@ class Pantry(Utility):
             self.res = requests.get(url, headers=HEADERS)
             return self.check_response()
 
-    def update(self, basket=None, outputfile=None, inputfile=None):
+    def update(self, basket, data: dict, outputfile=None):
         self.outputfile = outputfile
 
-        if basket:
-            url = f"{BASE_URL}{self.api_key}/basket/{basket}"
-            if self.is_path(inputfile):
-                data = self.read_json(path=inputfile)
-            else:
-                raise "Provide input data file."
-            self.res = requests.put(url, headers=HEADERS, data=json.dumps(data))
-            return self.check_response()
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary.")
 
-    def create(self, basket=None, inputfile=None):
-        if basket:
-            url = f"{BASE_URL}{self.api_key}/basket/{basket}"
-            if inputfile:
-                if self.is_path(inputfile):
-                    data = self.read_json(path=inputfile)
-                    self.res = requests.post(
-                        url, headers=HEADERS, data=json.dumps(data)
-                    )
-                else:
-                    raise f"Not a valid path : {inputfile}"
-            else:
-                self.res = requests.post(url, headers=HEADERS)
-            return self.check_response()
+        url = f"{BASE_URL}{self.api_key}/basket/{basket}"
+        res = requests.put(url, headers=HEADERS, json=data)
+        return res
+
+    def create(self, basket):
+        url = f"{BASE_URL}{self.api_key}/basket/{basket}"
+        res = requests.post(url, headers=HEADERS)
+        if res.status_code != 200:
+            raise ConnectionError(res.text)
 
     def delete(self, basket=None):
         if basket:
@@ -94,3 +88,4 @@ class Pantry(Utility):
             self.write_json(path=self.outputfile, data=data)
 
         return data
+
