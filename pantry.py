@@ -142,16 +142,26 @@ class Pantry(Utility):
                 raise ConnectionError(self.res.text)
             return self.check_response()
 
-    def check_response(self):
-        data = None
-        if self.res:
-            try:
-                data = self.res.json()
-            except json.decoder.JSONDecodeError or TypeError:
-                data = self.res.text
+if __name__ == "__main__":
 
-        if self.outputfile:
-            self.write_json(path=self.outputfile, data=data)
+    from time import sleep
 
-        return data
+    pantry = Pantry()
+    print("Loaded account", pantry.account.name)
 
+    print("Create test basket")
+    print(pantry.create_basket("test"))
+    sleep(2)
+    
+    print("Add payload")
+    test_basket = pantry.update("test",{
+        "testField": "testData"
+    })
+    print("Updated basket", test_basket)
+    sleep(2)
+
+    print("Delete test basket")
+    print(pantry.delete("test"))
+
+    print("Baskets", pantry.account.baskets)
+    
